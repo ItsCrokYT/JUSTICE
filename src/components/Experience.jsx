@@ -24,8 +24,9 @@ const StatueModel = ({ innerRef }) => {
   return (
     <Gltf
       ref={innerRef}
-      // CORRECCIÓN: Usamos import.meta.env.BASE_URL para la ruta relativa correcta en producción
-      src={`${import.meta.env.BASE_URL}models/statue/source/statue.glb`}
+      // CORRECCIÓN DEFINITIVA: Ruta relativa simple.
+      // "./" busca en la carpeta raíz del despliegue, sin importar si es /JUSTICE/ o localhost
+      src="./models/statue/source/statue.glb"
       scale={1}
       position={[0, -1.5, 0]}
       receiveShadow
@@ -37,8 +38,8 @@ const StatueModel = ({ innerRef }) => {
 const BalanceModel = () => {
   return (
     <Gltf 
-      // CORRECCIÓN: Usamos import.meta.env.BASE_URL aquí también
-      src={`${import.meta.env.BASE_URL}models/statue/source/balanza.glb`}
+      // CORRECCIÓN DEFINITIVA
+      src="./models/statue/source/balanza.glb"
       scale={3} 
       position={[0, 0, 0]} 
       receiveShadow
@@ -69,37 +70,28 @@ const Experience = ({ totalPages = 16, heroPages = 3 }) => {
 
   useFrame((state, delta) => {
     // --- 1. SINCRONIZACIÓN DINÁMICA ---
-    // Calculamos el rango exacto que ocupa el Hero en el scroll total
     const heroRatio = heroPages / totalPages; 
-    
-    // Normalizamos el scroll para que vaya de 0 a 1 SOLO dentro de la sección Hero
     const heroAnimation = scroll.range(0, heroRatio);
     
     let desiredPosition = new THREE.Vector3();
     let desiredTarget = new THREE.Vector3();
 
-    // FASE 1: De Página 1 a 2 (0% a 50% del Hero)
     if (heroAnimation < 0.5) {
       const t = heroAnimation * 2;
       desiredPosition.lerpVectors(new THREE.Vector3(...CAMERA_POSITIONS.start.position), new THREE.Vector3(...CAMERA_POSITIONS.middle.position), t);
       desiredTarget.lerpVectors(new THREE.Vector3(...CAMERA_POSITIONS.start.target), new THREE.Vector3(...CAMERA_POSITIONS.middle.target), t);
-    } 
-    // FASE 2: De Página 2 a 3 (50% a 100% del Hero)
-    else {
+    } else {
       const t = (heroAnimation - 0.5) * 2;
       desiredPosition.lerpVectors(new THREE.Vector3(...CAMERA_POSITIONS.middle.position), new THREE.Vector3(...CAMERA_POSITIONS.end.position), t);
       desiredTarget.lerpVectors(new THREE.Vector3(...CAMERA_POSITIONS.middle.target), new THREE.Vector3(...CAMERA_POSITIONS.end.target), t);
     }
 
-    // --- 2. TRANSICIONES DE SALIDA/ENTRADA ---
-    
-    // A. Estatua se hunde AL TERMINAR el Hero
-    // Añadimos un pequeño margen (0.01) para asegurar que llegue a la posición final antes de hundirse
+    // --- 2. TRANSICIONES ---
     const exitPoint = heroRatio + 0.01;
 
     if (statueGroupRef.current) {
       if (scroll.offset > exitPoint) {
-        const exitProgress = (scroll.offset - exitPoint) * 20; // Velocidad de salida
+        const exitProgress = (scroll.offset - exitPoint) * 20;
         statueGroupRef.current.position.y = -exitProgress; 
         statueGroupRef.current.rotation.y = exitProgress * 0.5;
       } else {
@@ -108,7 +100,6 @@ const Experience = ({ totalPages = 16, heroPages = 3 }) => {
       }
     }
 
-    // B. Balanza aparece en Stats (Aprox 30% del scroll total)
     if (scalesRef.current) {
       const showBalance = scroll.offset > (heroRatio + 0.1); 
       const targetY = showBalance ? 0.5 : 8; 
