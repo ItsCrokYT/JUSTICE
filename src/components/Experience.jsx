@@ -24,7 +24,8 @@ const StatueModel = ({ innerRef }) => {
   return (
     <Gltf
       ref={innerRef}
-      src="/models/statue/source/statue.glb"
+      // CORRECCIÓN: Usamos import.meta.env.BASE_URL para la ruta relativa correcta en producción
+      src={`${import.meta.env.BASE_URL}models/statue/source/statue.glb`}
       scale={1}
       position={[0, -1.5, 0]}
       receiveShadow
@@ -36,7 +37,8 @@ const StatueModel = ({ innerRef }) => {
 const BalanceModel = () => {
   return (
     <Gltf 
-      src="/models/statue/source/balanza.glb" 
+      // CORRECCIÓN: Usamos import.meta.env.BASE_URL aquí también
+      src={`${import.meta.env.BASE_URL}models/statue/source/balanza.glb`}
       scale={3} 
       position={[0, 0, 0]} 
       receiveShadow
