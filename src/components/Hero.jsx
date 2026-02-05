@@ -87,7 +87,7 @@ const Hero = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) setTotalPages(15.5); 
+      if (window.innerWidth < 768) setTotalPages(15.9); 
       else if (window.innerWidth < 1024) setTotalPages(15.5);
       else setTotalPages(11.1);
     };
@@ -150,6 +150,7 @@ const Hero = () => {
               <div id="contact">
                 <Contact content={t?.contact} />
               </div>
+
 <Footer content={t?.footer} />
 
               <Footer />

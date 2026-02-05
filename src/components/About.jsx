@@ -1,9 +1,37 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { translations } from "../constants/translations";
+// import { translations } from "../constants/translations"; 
+
+/* ================== DATA POR DEFECTO ================== */
+const defaultAboutContent = {
+  intro: "Introducción",
+  title: "Quiénes Somos.",
+  description: "En Justice & Partners, no solo practicamos la ley; redefinimos la estrategia legal. Con más de dos décadas de experiencia combinada, fusionamos el conocimiento jurídico tradicional con análisis de datos modernos para ofrecer una defensa inquebrantable.",
+  services: [
+    {
+      id: "01",
+      title: "Derecho Corporativo",
+      description: "Arquitectura legal para fusiones, adquisiciones y reestructuraciones complejas.",
+    },
+    {
+      id: "02",
+      title: "Litigio de Alto Nivel",
+      description: "Defensa estratégica en tribunales y arbitrajes internacionales.",
+    },
+    {
+      id: "03",
+      title: "Propiedad Intelectual",
+      description: "Blindaje de activos intangibles, patentes y derechos de marca en la era digital.",
+    },
+    {
+      id: "04",
+      title: "Gestión de Crisis",
+      description: "Resolución rápida y discreta de conflictos que amenazan la reputación.",
+    },
+  ]
+};
 
 /* ================== ANIMACIONES ================== */
-
 const containerVariant = {
   hidden: {},
   show: {
@@ -21,30 +49,36 @@ const itemVariant = {
 };
 
 /* ================== SERVICE CARD ================== */
-
-const ServiceCard = ({ id, title, description }) => {
+const ServiceCard = ({ id, title, description, index, total }) => {
   if (!title || !description) return null;
 
   return (
     <motion.div
       variants={itemVariant}
-      className="group relative w-full min-h-[350px] p-8 border-l border-white/20 hover:border-white transition-colors duration-500 flex flex-col justify-between cursor-default"
+      className={`
+        group relative w-full flex flex-col justify-between cursor-default transition-colors duration-500
+        /* Aumentamos altura mínima y usamos h-auto para que crezca si el texto es largo */
+        min-h-[300px] h-auto
+        p-6 sm:p-8 
+        border-l border-white/20 hover:border-white
+        border-b border-white/10 lg:border-b-0
+        ${index === total - 1 ? 'border-b-0' : ''}
+      `}
     >
       <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors duration-700 ease-out -z-10" />
 
-      <div className="space-y-6">
-        <h4 className="text-6xl font-serif font-thin text-white/20 group-hover:text-white transition-colors duration-500">
+      <div className="space-y-4 sm:space-y-6">
+        <h4 className="text-5xl sm:text-6xl font-serif font-thin text-white/20 group-hover:text-white transition-colors duration-500">
           {id}
         </h4>
-
-        <h3 className="text-2xl font-serif font-light text-white leading-tight">
+        <h3 className="text-xl sm:text-2xl font-serif font-light text-white leading-tight">
           {title}
         </h3>
       </div>
 
-      <div>
-        <div className="w-8 h-[1px] bg-white/20 mb-6 group-hover:w-full transition-all duration-700 ease-out" />
-        <p className="text-sm text-gray-400 font-sans font-light leading-relaxed tracking-wide group-hover:text-white transition-colors duration-500">
+      <div className="mt-6 sm:mt-0 pt-4">
+        <div className="w-8 h-[1px] bg-white/20 mb-4 sm:mb-6 group-hover:w-full transition-all duration-700 ease-out" />
+        <p className="text-sm text-gray-400 font-sans font-light leading-relaxed tracking-wide group-hover:text-white transition-colors duration-500 pb-2">
           {description}
         </p>
       </div>
@@ -53,31 +87,26 @@ const ServiceCard = ({ id, title, description }) => {
 };
 
 /* ================== ABOUT ================== */
-
 const About = ({ content }) => {
-  // Fallback TOTAL (nunca se queda vacío)
-  const safeContent = content || translations.es.about;
+  const safeContent = content || defaultAboutContent;
+  const services = Array.isArray(safeContent.services) ? safeContent.services : [];
 
-  const services = Array.isArray(safeContent.services)
-    ? safeContent.services
-    : [];
-
-  // Manejo seguro del título
-  const titleWords = safeContent.title?.split(" ") || ["Quiénes", "Somos"];
+  const titleString = safeContent.title || "Quiénes Somos";
+  const titleWords = titleString.split(" ");
   const titleFirst = titleWords[0];
   const titleRest = titleWords.slice(1).join(" ");
 
   return (
-    <section className="relative z-0 bg-black py-24 sm:py-40">
+    // Aumentamos el padding inferior (pb-40) para alejar la siguiente sección (Stats)
+    <section className="relative z-0 bg-black py-24 pb-40 sm:py-40">
       <div className="max-w-7xl mx-auto px-6 sm:px-16">
         
-        {/* ===== TEXTO SUPERIOR ===== */}
         <motion.div
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
           variants={containerVariant}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-32 items-end"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20 sm:mb-32 items-end"
         >
           <motion.div variants={itemVariant} className="lg:col-span-7">
             <h2 className="text-5xl sm:text-7xl md:text-8xl font-serif font-thin text-white leading-[0.9] tracking-tight">
@@ -87,7 +116,7 @@ const About = ({ content }) => {
           </motion.div>
 
           <motion.div variants={itemVariant} className="lg:col-span-5">
-            <p className="text-lg text-gray-400 font-sans font-light leading-relaxed text-justify">
+            <p className="text-base sm:text-lg text-gray-400 font-sans font-light leading-relaxed text-justify">
               <span className="text-white uppercase tracking-widest text-xs block mb-4 border-b border-white/20 pb-4">
                 {safeContent.intro}
               </span>
@@ -96,7 +125,6 @@ const About = ({ content }) => {
           </motion.div>
         </motion.div>
 
-        {/* ===== SERVICIOS ===== */}
         <motion.div
           variants={containerVariant}
           initial="hidden"
@@ -104,9 +132,11 @@ const About = ({ content }) => {
           viewport={{ once: true, amount: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t border-r border-b border-white/10"
         >
-          {services.map((service) => (
+          {services.map((service, index) => (
             <ServiceCard
-              key={service.id}   // 🔥 KEY FIJA (NO traducida)
+              key={service.id || index}
+              index={index}
+              total={services.length}
               {...service}
             />
           ))}
